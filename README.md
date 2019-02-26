@@ -1,6 +1,5 @@
-# star
-
-TODO: Write a description here
+# STAR
+A **ST**upid **AR**chive 
 
 ## Installation
 
