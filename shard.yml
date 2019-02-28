@@ -6,7 +6,12 @@ authors:
 
 targets:
   star:
-    main: src/star.cr
+    main: src/star/main.cr
+
+dependencies:
+  commander:
+      github: mrrooijen/commander
+      version: ~> 0.3.3
 
 crystal: 0.27.2
 
