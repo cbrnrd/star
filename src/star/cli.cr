@@ -5,20 +5,43 @@ require "./commands/*"
 module Star
 class Cli
   def self.run(args)
+
     cli = Commander::Command.new do |command|
       command.use = "star"
       command.long = "The Stupid Archive format\n\n  star v#{Star::VERSION}"
 
       command.commands.add do |cmd|
-        cmd.use = "combine"
+        cmd.use = "combine <star file> [file1 file2 ...]"
         cmd.short = "Combines the files into a .star file."
         cmd.long = cmd.short
 
         cmd.run do |opts, args|
           # star combine MyName.star file1.txt file2.txt ...
+          fail_with("You need a list of files first.") if args.size == 1
+          fail_with("File extension needs to be '.star'") unless args[0].ends_with?(".star")
           filename = args[0]
           files = args[1..-1]
           Star::Commands::Combine.run(filename, opts, files)
+        end
+      end
+
+      command.commands.add do |cmd|
+        cmd.use = "extract <star file> [outfile] [opts]"
+        cmd.short = "Extracts all files"
+        cmd.long = cmd.short
+
+        cmd.run do |opts, args|
+          if args.size == 0
+            puts "You need to specify a starfile to extract."
+            exit(1)
+          end
+          filename = args[0]
+          if args.size == 1
+            outfile = args[0].gsub(".star", "")
+          else 
+            outfile = args[1]
+          end
+          Star::Extract.run(filename, outfile)
         end
       end
 
