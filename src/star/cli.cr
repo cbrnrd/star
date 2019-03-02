@@ -45,6 +45,16 @@ class Cli
         end
       end
 
+      command.commands.add do |cmd|
+        cmd.use = "version"
+        cmd.short = "Show the star program version"
+        cmd.long = command.short
+
+        cmd.run do
+          puts "star v\u001b[37;1m#{Star::VERSION}\u001b[0m"
+        end
+      end
+
       command.flags.add do |flag|
         flag.name = "verbose"
         flag.long = "--verbose"
