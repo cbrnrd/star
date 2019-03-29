@@ -12,10 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "gzip"
+
 module Star
 class Extract
-  def self.run(infile : String, outdir : String)
-
+  def self.run(infile : String, outdir : String, opts={} of String => String)
+    if opts.bool["gzip"]
+      # Write decompressed star file to disk and continue
+      # also delete .gz from `infile`
+      new_fname = infile.gsub(".gz", "")
+      File.open(infile) do |f|
+        Gzip::Reader.open(f) do |g|
+          File.open(new_fname, "w") {|x| x << g.gets_to_end}
+        end
+      end
+      infile = new_fname
+    end
     fail_with("Could not find starfile #{infile}") unless File.exists?(infile)
     fail_with("Specified starfile is not a valid starfile") unless is_star_file(infile)
     star_contents = File.read(infile)
@@ -37,7 +49,7 @@ class Extract
         File.open("#{outdir}#{File::SEPARATOR}#{name}", "w"){ |f| f << get_file_contents_at_index(i, star_contents) }
     end
     
-    
+    File.delete(infile) if opts.bool["gzip"]
 
   end
 

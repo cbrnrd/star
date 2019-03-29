@@ -30,6 +30,14 @@ class Cli
         cmd.short = "Extracts all files"
         cmd.long = cmd.short
 
+        cmd.flags.add do |f|
+          f.name = "gzip"
+          f.short = "-g"
+          f.long = "--gzip"
+          f.description = "Decompress the gzipped .star file."
+          f.default = false
+        end
+
         cmd.run do |opts, args|
           if args.size == 0
             puts "You need to specify a starfile to extract."
@@ -38,10 +46,11 @@ class Cli
           filename = args[0]
           if args.size == 1
             outfile = args[0].gsub(".star", "")
+            outfile = outfile.gsub(".gz", "") if opts.bool["gzip"] 
           else 
             outfile = args[1]
           end
-          Star::Extract.run(filename, outfile)
+          Star::Extract.run(filename, outfile, opts)
         end
       end
 
