@@ -49,11 +49,17 @@ class Extract
       fail_with("Unable to create target directory", e)
     end
     filelist = get_file_listing(star_contents)
-    filelist.map!{|f| File.basename(f)}
+    hashlist = filelist.map{|f| f = f.split("{*&*}")[1]}
+    filelist.map!{|f| f = f.split("{*&*}")[0]} # Remove file hash
+    filelist.map!{|f| File.basename(f)} # Only use the basename
 
     # filelist contains ONLY BASENAMES
     # Get file contents of file (at index n)
     filelist.each_with_index do |name, i|
+        unless check_hash(get_file_contents_at_index(i, star_contents), hashlist[i])
+          Dir.rmdir(outdir)
+          fail_with("Hash mismatch at file \"#{filelist[i]}.\" The data is either corrupted or has been tampered with.") 
+        end
         File.open("#{outdir}#{File::SEPARATOR}#{name}", "w"){ |f| f << get_file_contents_at_index(i, star_contents) }
     end
     
@@ -82,6 +88,10 @@ class Extract
 
   def self.is_star_file(path : String) : Bool
     return (path[-5..-1] == ".star" && (File.read(path)[0..8] == "s t a r 1"))
+  end
+
+  def self.check_hash(contents, hash)
+    return OpenSSL::Digest.new("SHA256").update(contents).hexdigest =~ hash
   end
 
 end

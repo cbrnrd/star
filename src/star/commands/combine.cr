@@ -1,5 +1,5 @@
-
 require "../*"
+require "openssl"
 module Star
 module Commands
 class Combine
@@ -18,6 +18,9 @@ class Combine
     end
 
     begin
+      fnames.map! do |f|
+        f = f + "{*&*}" + OpenSSL::Digest.new("SHA256").update(File.read(f)).hexdigest
+      end
       # File objects are in `files` array, iterate through them and combine
       s = String.build do |s|
         s << Star::Text.pad("\x73\x20\x74\x20\x61\x20\x72\x20\x31", 16) # Magic: `s t a r 1
