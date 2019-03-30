@@ -1,5 +1,7 @@
 require "commander"
 require "./constants"
+require "./util"
+require "./text"
 require "./commands/*"
 
 module Star
@@ -35,6 +37,14 @@ class Cli
           f.short = "-g"
           f.long = "--gzip"
           f.description = "Decompress the gzipped .star file."
+          f.default = false
+        end
+
+        cmd.flags.add do |f|
+          f.name = "delete"
+          f.short = "-d"
+          f.long = "--delete"
+          f.description = "Delte the star file after extracting it."
           f.default = false
         end
 

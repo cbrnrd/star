@@ -8,6 +8,7 @@ class Combine
   end
 
   def self.write_file(outname, *filenames)
+
     files = [] of File
     fnames = filenames[0][0]
 

@@ -17,6 +17,12 @@ require "gzip"
 module Star
 class Extract
   def self.run(infile : String, outdir : String, opts={} of String => String)
+    
+    # Check if file is in gzip format
+    if File.gzip?(infile) && (opts.bool["gzip"] == false || opts.bool["gzip"].nil?)
+      fail_with("File is in gzip format. Use the -g flag.")
+    end
+
     if opts.bool["gzip"]
       # Write decompressed star file to disk and continue
       # also delete .gz from `infile`
@@ -28,8 +34,10 @@ class Extract
       end
       infile = new_fname
     end
+
     fail_with("Could not find starfile #{infile}") unless File.exists?(infile)
     fail_with("Specified starfile is not a valid starfile") unless is_star_file(infile)
+
     star_contents = File.read(infile)
 
     fail_with("Target directory already exists: \"#{outdir}\"") if (File.exists?(outdir) || File.directory?(outdir))
@@ -49,7 +57,7 @@ class Extract
         File.open("#{outdir}#{File::SEPARATOR}#{name}", "w"){ |f| f << get_file_contents_at_index(i, star_contents) }
     end
     
-    File.delete(infile) if opts.bool["gzip"]
+    File.delete(infile) if opts.bool["gzip"] || opts.bool["delete"]
 
   end
 
@@ -60,14 +68,14 @@ class Extract
   def self.get_file_listing(contents) : Array(String)
     flist = [] of String
     contents = contents.gsub(Star::Text.pad("s t a r 1", 16), "") # remove magic
-    contents = contents.gsub("\xCA\xFE\xCA\xFE\xBA\xBE\xBA\xBE", "") # remove begin file list
-    contents = contents.partition("\xBA\xBE\xBA\xBE\xCA\xFE\xCA\xFE")
+    contents = contents.gsub(Star::Spec::BEGIN_FILE_LIST, "") # remove begin file list
+    contents = contents.partition(Star::Spec::END_FILE_LIST)
     return (contents[0].split("{:\x00:}") { |f| flist << f }).as(Array(String))
   end
 
   def self.get_file_contents_at_index(index : Number, contents) : String
-    file_contents = contents.split("\xBA\xBE\xBA\xBE\xCA\xFE\xCA\xFE")[1..-1] # Split by star end of file hex
-    file_contents.map!{|a| a.gsub("\x53\x20\x54\x20\x41\x20\x52\x20\x42\x20\x45\x20\x47\x20\x49\x20\x4e\x20\x5c\x20\x5c\x20\x26\x24", "") } # Remove starbegin indicator
+    file_contents = contents.split(Star::Spec::END_FILE_LIST)[1..-1] # Split by star end of file hex
+    file_contents.map!{|a| a.gsub(Star::Spec::BEGIN_FILE, "") } # Remove starbegin indicator
     file_contents = file_contents[0].split("\x53\x20\x54\x20\x41\x20\x52\x20\x45\x20\x4e\x20\x44\x20\x4f\x20\x46\x20\x5c\x20\x5c\x20\x26\x24")[0..-2]
     return file_contents[index]
   end
