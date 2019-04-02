@@ -10,9 +10,9 @@ The [Crystal compiler](https://crystal-lang.org/reference/installation/) is requ
 One-liner to install star: `git clone https://github.com/cbrnrd/star && cd star && make install`
 
 
-2. Shards
+2. Precompiled
 
-If you already have crystal installed, you can just install it using the shards command: `shards install star`
+There are precompiled binaries and object files in the `releases` section in GitHub. 
 
 ## Usage
 
