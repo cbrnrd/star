@@ -1,2 +1,2 @@
 # TODO
-* Add checksums to the files
+* Add checksums to the files (done)
