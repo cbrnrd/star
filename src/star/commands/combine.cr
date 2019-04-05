@@ -1,13 +1,17 @@
 require "../*"
 require "openssl"
+require "colorize"
+
 module Star
 module Commands
 class Combine
   def self.run(fname, opts={} of String => String, *files)
-    write_file(fname, files)
+    write_file(fname, opts, files)
   end
 
-  def self.write_file(outname, *filenames)
+  def self.write_file(outname, opts={} of String => String, *filenames)
+
+    verb = opts.bool["verbose"] || false
 
     files = [] of File
     fnames = filenames[0][0]
@@ -15,14 +19,19 @@ class Combine
     fnames.each do |f|
       fail_with("File doesn't exist: #{f}") unless File.exists?(f)
       files << File.new(f, "a")
+      if opts.bool["verbose"]
+        puts "  combine ".colorize(:light_green).mode(:bold).to_s + f
+      end
     end
 
+    
     begin
       fnames.map! do |f|
         f = f + "{*&*}" + OpenSSL::Digest.new("SHA256").update(File.read(f)).hexdigest
       end
       # File objects are in `files` array, iterate through them and combine
       s = String.build do |s|
+        puts "Building starfile" if verb
         s << Star::Text.pad("\x73\x20\x74\x20\x61\x20\x72\x20\x31", 16) # Magic: `s t a r 1
         s << "\xCA\xFE\xCA\xFE\xBA\xBE\xBA\xBE" # Begin file list
         s << fnames.join("{:\x00:}")

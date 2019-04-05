@@ -17,7 +17,7 @@ require "gzip"
 module Star
 class Extract
   def self.run(infile : String, outdir : String, opts={} of String => String)
-    
+    verb = opts.bool["verbose"] || false
     # Check if file is in gzip format
     if File.gzip?(infile) && (opts.bool["gzip"] == false || opts.bool["gzip"].nil?)
       fail_with("File is in gzip format. Use the -g flag.")
@@ -29,6 +29,7 @@ class Extract
       new_fname = infile.gsub(".gz", "")
       File.open(infile) do |f|
         Gzip::Reader.open(f) do |g|
+          puts "Reading gzip file and writing to temp starfile..." if verb
           File.open(new_fname, "w") {|x| x << g.gets_to_end}
         end
       end
@@ -44,12 +45,18 @@ class Extract
 
     # If we get here, that means the target directory does not exist. Continue with creating the directory.
     begin
+      puts "Creating \"#{outdir}\" directory..." if verb
       Dir.mkdir("#{outdir}")
     rescue e : Exception
       fail_with("Unable to create target directory", e)
     end
     filelist = get_file_listing(star_contents)
     hashlist = filelist.map{|f| f = f.split("{*&*}")[1]}
+    if verb
+      puts "hashlist: "
+      hashlist.each { |h| puts "  " + h }
+      puts "Removing hashes from filelist object"
+    end
     filelist.map!{|f| f = f.split("{*&*}")[0]} # Remove file hash
     filelist.map!{|f| File.basename(f)} # Only use the basename
 
@@ -57,9 +64,11 @@ class Extract
     # Get file contents of file (at index n)
     filelist.each_with_index do |name, i|
         unless check_hash(get_file_contents_at_index(i, star_contents), hashlist[i])
+          puts "Removing the output directory due to hash mismatch." if verb
           Dir.rmdir(outdir)
           fail_with("Hash mismatch at file \"#{filelist[i]}.\" The data is either corrupted or has been tampered with.") 
         end
+        puts "  extract ".colorize(:light_blue).mode(:bold).to_s + "#{outdir}#{File::SEPARATOR}#{name}" if verb
         File.open("#{outdir}#{File::SEPARATOR}#{name}", "w"){ |f| f << get_file_contents_at_index(i, star_contents) }
     end
     
@@ -91,7 +100,50 @@ class Extract
   end
 
   def self.check_hash(contents, hash)
-    return OpenSSL::Digest.new("SHA256").update(contents).hexdigest =~ hash
+    return OpenSSL::Digest.new("SHA256").update(contents).hexdigest.to_s == hash
+  end
+
+  # This is pretty much the same as #run but without writing anything to disk
+  def self.verify_archive(infile, opts={} of String => String)
+    verb = opts.bool["verbose"] || false
+    # Check if file is in gzip format
+    if File.gzip?(infile) && (opts.bool["gzip"] == false || opts.bool["gzip"].nil?)
+      fail_with("File is in gzip format. Use the -g flag.")
+    end
+
+    fail_with("Could not find starfile #{infile}") unless File.exists?(infile)
+    fail_with("Specified starfile is not a valid starfile") unless is_star_file(infile)
+
+    star_contents = File.read(infile)
+
+    filelist = get_file_listing(star_contents)
+    hashlist = filelist.map{|f| f = f.split("{*&*}")[1]}
+    if verb
+      puts "hashlist: "
+      hashlist.each { |h| puts "  " + h }
+      puts "Removing hashes from filelist object"
+    end
+    filelist.map!{|f| f = f.split("{*&*}")[0]} # Remove file hash
+    filelist.map!{|f| File.basename(f)} # Only use the basename
+
+    # filelist contains ONLY BASENAMES
+    # Get file contents of file (at index n)
+    failed_files = {} of String => String # filename => hash in file
+    filelist.each_with_index do |name, i|
+      unless check_hash(get_file_contents_at_index(i, star_contents), hashlist[i])
+        failed_files[filelist[i]] = hashlist[i]
+      end
+    end
+
+    if failed_files.size == 0
+      puts "Archive passed verification."
+    else
+      puts "Archive did not pass verification."
+      puts "Verification failures:"
+      failed_files.each do |n, h|
+        puts "  #{n} is supposed to have hash #{h[0..8]}, has #{OpenSSL::Digest.new("SHA256").update(star_contents).hexdigest.to_s[0..8]} instead." 
+      end
+    end
   end
 
 end

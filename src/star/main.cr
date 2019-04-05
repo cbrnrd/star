@@ -1,6 +1,6 @@
 require "./cli"
 
-if ARGV.size == 0
+if ARGV.size == 0 || ARGV[0] == "--verbose"
   ARGV << "-h"
 end
 

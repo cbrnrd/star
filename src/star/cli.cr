@@ -17,6 +17,14 @@ class Cli
         cmd.short = "Combines the files into a .star file."
         cmd.long = cmd.short
 
+        cmd.flags.add do |f|
+          f.name = "verbose"
+          f.short = "-v"
+          f.long = "--verbose"
+          f.description = "Run with verbose output"
+          f.default = false
+        end
+
         cmd.run do |opts, args|
           # star combine MyName.star file1.txt file2.txt ...
           fail_with("You need a list of files first.") if args.size == 1
@@ -28,7 +36,7 @@ class Cli
       end
 
       command.commands.add do |cmd|
-        cmd.use = "extract <star file> [outfile] [opts]"
+        cmd.use = "extract [opts] <star file> [outfile] "
         cmd.short = "Extracts all files"
         cmd.long = cmd.short
 
@@ -45,6 +53,14 @@ class Cli
           f.short = "-d"
           f.long = "--delete"
           f.description = "Delte the star file after extracting it."
+          f.default = false
+        end
+
+        cmd.flags.add do |f|
+          f.name = "verbose"
+          f.short = "-v"
+          f.long = "--verbose"
+          f.description = "Run with verbose output"
           f.default = false
         end
 
@@ -65,14 +81,33 @@ class Cli
       end
 
       command.commands.add do |cmd|
+        cmd.use = "verify"
+        cmd.short = "Verify the archive."
+        cmd.long = cmd.short
+
+        cmd.run do |opts, args|
+          Star::Extract.verify_archive(args[0], opts)
+        end
+
+        cmd.flags.add do |f|
+          f.name = "verbose"
+          f.short = "-v"
+          f.long = "--verbose"
+          f.description = "Run with verbose output"
+          f.default = false
+        end
+      end
+
+      command.commands.add do |cmd|
         cmd.use = "version"
         cmd.short = "Show the star program version"
         cmd.long = command.short
 
         cmd.run do
-          puts "star v\u001b[37;1m#{Star::VERSION}\u001b[0m"
+          puts "star v#{Star::VERSION.colorize.mode(:bold)}"
         end
       end
+
 
       command.flags.add do |flag|
         flag.name = "verbose"
