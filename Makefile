@@ -6,6 +6,7 @@ VERSION ?= $(shell cat src/star/constants.cr | grep VERSION | cut -d '"' -f 2)
 
 
 build:
+	$(shell mkdir -p ./bin)
 	$(CRYSTAL_BIN) build --release -o bin/star src/star/main.cr $(CRFLAGS)
 
 clean:
@@ -23,7 +24,8 @@ deps:
 	$(SHARDS_BIN)
 
 install: deps build
-	mkdir -p $(PREFIX)/bin
+	echo $(PREFIX)
+	@mkdir -p bin
 	cp ./bin/star $(PREFIX)/bin
 
 reinstall: build

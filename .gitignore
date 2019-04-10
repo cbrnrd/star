@@ -1,5 +1,5 @@
-/docs/
 /bin/
 /.shards/
 *.dwarf
 sentry
+*.tex
