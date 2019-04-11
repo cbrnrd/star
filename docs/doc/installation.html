@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="The Stupid Archive Format">
+		<meta name="author" content="Carter Brainerd">
+
+		<title>Star | Installation</title>
+
+		<link rel="shortcut icon" href="../img/favicon.png"/>
+
+		<link rel="stylesheet" type="text/css" href="../css/lib/wing.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/styles.css" />
+		<link rel="stylesheet" type="text/css" href="../css/post.css" />
+
+		<script src="../js/lib/moon.min.js"></script>
+	</head>
+
+	<body>
+		<div id="nav" class="container">
+			<h2 id="nav-home"><a href="../">Star</a></h2>
+
+			<div id="nav-items">
+				<a href="./whitepaper.html">Whitepaper</a>
+				<a href="./about.html">About</a>
+				<a href="https://github.com/kbrsh/moon">GitHub</a>
+			</div>
+		</div>
+
+		<div id="post" class="container flex">
+			<div id="side">
+				<h6>Documentation</h6>
+				<a href="./about.html">About</a>
+				<a id="active" href="./installation.html">Installation</a>
+				<a href="./fileformat.html">File Format</a>
+			</div>
+			<div id="content">
+				<h1>Installation</h1>
+				<p>Star should be installed via source. To do that, you need to install the <a href="https://crystal-lang.org">crystal compiler.</a></p>
+				<p>There are 2 ways to install star via source:
+					<ol>
+						<li>Easy-install script</li>
+						<pre><code lang="bash">$ curl <span class="blue">https://git.io/star-install</span> | sudo bash</code></pre>
+						<li>Git clone</li>
+						<pre><code lang="bash">$ git clone <span class="blue">https://github.com/cbrnrd/star</span> && cd star</br>$ make install</code></pre>
+					</ol>
+				</p>
+
+<h3 id="cli">CLI</h3>
+<p>Star CLI is written in Crystal, so it's compiled. Star CLI is the only officially supported way to use starfiles, but others can create libraries and CLI programs in other languages.</p>
+<p>Star CLI supports the following starfile features:</p>
+<ul>
+<li>Multithreaded file extraction</li>
+<li>File combining</li>
+<li>Hash verification</li>
+</ul>
+
+<p><pre><code lang="bash">$ ./star -h
+  star - The Stupid Archive format
+
+  star v0.2.2
+
+  Usage:
+    star [command] [flags] [arguments]
+
+  Commands:
+    combine &lt;star file&gt; [file1 file2 ...]   Combines the files into a .star file.
+    extract [opts] &lt;star file&gt; [outfile]    Extracts all files
+    help [command]                          Help about any command.
+    verify                                  Verify the archive.
+    version                                 Show the star program version
+
+  Flags:
+    -h, --help      Help for this command. default: 'false'.
+        --verbose   Run with verbose output. default: 'false'.</code></pre></p>
+
+			</div>
+		</div>
+	</body>
+	<footer>
+    <p align="center">Made w/ ❤️ by <a href="https://github.com/cbrnrd/">cbrnrd</a></p>
+  </footer>
+</html>

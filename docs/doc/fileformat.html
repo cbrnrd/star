@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="The Stupid Archive Format">
+		<meta name="author" content="Carter Brainerd">
+
+		<title>Star | File Format</title>
+
+		<link rel="shortcut icon" href="../img/favicon.png"/>
+
+		<link rel="stylesheet" type="text/css" href="../css/lib/wing.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/styles.css" />
+		<link rel="stylesheet" type="text/css" href="../css/post.css" />
+
+		<script src="../js/lib/moon.min.js"></script>
+	</head>
+
+	<body>
+		<div id="nav" class="container">
+			<h2 id="nav-home"><a href="../index.html">Star</a></h2>
+
+			<div id="nav-items">
+				<a href="./whitepaper.html">Whitepaper</a>
+				<a href="./about.html">About</a>
+				<a href="./examples.html">Examples</a>
+				<a href="https://github.com/cbrnrd/star">GitHub</a>
+			</div>
+		</div>
+
+		<div id="post" class="container flex">
+			<div id="side">
+				<h6>Documentation</h6>
+						<a href="./about.html">About</a>
+						<a href="./installation.html">Installation</a>
+						<a id="active" href="./fileformat.html">File Format</a>
+			</div>
+			<div id="content">
+				<h1>File format</h1>
+                <p>An archive produced by the <code>star</code> program is called a <em>starfile</em>.
+                The following table describes the standard <code>starfile</code> format.</p>
+                
+                <style type="text/css">
+                    .tg  {border-collapse:collapse;border-spacing:0;}
+                    .tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+                    .tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+                    .tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}
+                    .tg .tg-7btt{font-weight:bold;border-color:inherit;text-align:center;vertical-align:top}
+                    .tg .tg-fymr{font-weight:bold;border-color:inherit;text-align:left;vertical-align:top}
+                    .tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+                    </style>
+                    <table class="tg">
+                      <tr>
+                        <th class="tg-7btt">Total bytes</th>
+                        <th class="tg-7btt">Byte Value</th>
+                        <th class="tg-fymr">Meaning</th>
+                      </tr>
+                      <tr>
+                        <td class="tg-c3ow">16</td>
+                        <td class="tg-c3ow"><code>\x73\x20\x74\x20\x61\x20<br>\x72\x20\x31\x00\x00...</code></td>
+                        <td class="tg-0pky">s t a r 1\x00*16 (file magic)</td>
+                      </tr>
+                      <tr>
+                        <td class="tg-c3ow">8</td>
+                        <td class="tg-c3ow"><code>\xCA\xFE\xCA\xFE<br>\xBA\xBE\xBA\xBE</code></td>
+                        <td class="tg-0pky">Beginning of file list</td>
+                      </tr>
+                      <tr>
+                        <td class="tg-c3ow">n</td>
+                        <td class="tg-c3ow">filename{*&amp;*}filehash{:\x00:}<br>filename{*&amp;*}filehash{:\x00:}...</td>
+                        <td class="tg-0pky">File list separated by {:\x00:}</td>
+                      </tr>
+                      <tr>
+                        <td class="tg-c3ow">8</td>
+                        <td class="tg-c3ow"><code>\xBA\xBE\xBA\xBE<br>\xCA\xFE\xCA\xFE</code></td>
+                        <td class="tg-0pky">End of the file list</td>
+                      </tr>
+                      <tr>
+                        <td class="tg-c3ow">24</td>
+                        <td class="tg-c3ow"><code>\x53\x20\x54\x20\x41\x20<br>\x52\x20\x42\x20\x45\x20<br>\x47\x20\x49\x20\x4e\x20<br>\x5c\x20\x5c\x20\x26\x24</code></td>
+                        <td class="tg-0pky">Beginning of file <br>(S T A R B E G I N \ \ &amp;$)</td>
+                      </tr>
+                      <tr>
+                        <td class="tg-c3ow">n</td>
+                        <td class="tg-c3ow">file contents</td>
+                        <td class="tg-0pky">The contents of the file</td>
+                      </tr>
+                      <tr>
+                        <td class="tg-c3ow">24</td>
+                        <td class="tg-c3ow"><code>\x53\x20\x54\x20\x41\x20<br>\x52\x20\x45\x20\x4e\x20<br>\x44\x20\x4f\x20\x46\x20<br>\x5c\x20\x5c\x20\x26\x24</code></td>
+                        <td class="tg-0pky">End of file <br>(S T A R E N D O F \ \ &amp;$)</td>
+                      </tr>
+                      <tr>
+                        <td class="tg-c3ow">n</td>
+                        <td class="tg-c3ow">{begin file hex}{file contents}<br>{end of file hex}</td>
+                        <td class="tg-0pky">Basic layout for file contents.<br>Repeats for every file in <br>the archive.</td>
+                      </tr>
+                      <tr>
+                        <td class="tg-c3ow">16</td>
+                        <td class="tg-c3ow"><code>\x65\x20\x73\x20\x74\x20<br>\x61\x20\x72\x00\x00...</code></td>
+                        <td class="tg-0pky">End of star file</td>
+                      </tr>
+                    </table>
+                <p>If you are interested in reading more about the file specification, go check out the <a href="./whitepaper.html">whitepaper.</a></p>
+    </body>
+    <footer>
+        <p align="center">Made w/ ❤️ by <a href="https://github.com/cbrnrd/">cbrnrd</a></p>
+      </footer>
+</html>
