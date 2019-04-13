@@ -4,6 +4,10 @@
 <p align="center">
 	<a href="https://travis-ci.org/cbrnrd/star"><img src="https://travis-ci.org/cbrnrd/star.svg?branch=master" alt="Build Status"></a>
 	<a href="https://github.com/cbrnrd/star/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a>
+	
+<img src="https://img.shields.io/badge/version-0.2.2-brightgreen.svg" alt="version">
+  <a href="https://carterbrainerd.me/donations"><img src="https://img.shields.io/badge/donate-%3C3-red.svg?longCache=true&style=flat-square"></a>
+
 </p>
 
 ## Installation
@@ -35,3 +39,7 @@ For the usage instructions, you can just run `star help` after you install it.
 ## Contributors
 
 - [cbrnrd](https://github.com/cbrnrd) - creator and maintainer
+
+<p align="center">
+  <img height="100" width="300" src="https://i.imgur.com/obHmDnX.png">
+</p>
