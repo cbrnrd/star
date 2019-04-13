@@ -36,7 +36,7 @@ class Cli
       end
 
       command.commands.add do |cmd|
-        cmd.use = "extract [opts] <star file> [outfile] "
+        cmd.use = "extract [opts] <star file> [outfile]"
         cmd.short = "Extracts all files"
         cmd.long = cmd.short
 
@@ -46,6 +46,14 @@ class Cli
           f.long = "--gzip"
           f.description = "Decompress the gzipped .star file."
           f.default = false
+        end
+
+        cmd.flags.add do |f|
+          f.name = "threads"
+          f.short = "-t"
+          f.long = "--threads"
+          f.description = "The number of threads to use for extraction (Could speed up extract time)."
+          f.default = 4
         end
 
         cmd.flags.add do |f|

@@ -62,15 +62,32 @@ class Extract
 
     # filelist contains ONLY BASENAMES
     # Get file contents of file (at index n)
+    thread_num = opts.int["threads"]
+    thread_file_chan = Channel(String).new
+    name_index_hash = {} of String => Int32
     filelist.each_with_index do |name, i|
-        unless check_hash(get_file_contents_at_index(i, star_contents), hashlist[i])
-          puts "Removing the output directory due to hash mismatch." if verb
-          Dir.rmdir(outdir)
-          fail_with("Hash mismatch at file \"#{filelist[i]}.\" The data is either corrupted or has been tampered with.") 
-        end
-        puts "  extract ".colorize(:light_blue).mode(:bold).to_s + "#{outdir}#{File::SEPARATOR}#{name}" if verb
-        File.open("#{outdir}#{File::SEPARATOR}#{name}", "w"){ |f| f << get_file_contents_at_index(i, star_contents) }
+      unless check_hash(get_file_contents_at_index(i, star_contents), hashlist[i])
+        puts "Removing the output directory due to hash mismatch." if verb
+        Dir.rmdir(outdir)
+        fail_with("Hash mismatch at file \"#{filelist[i]}.\" The data is either corrupted or has been tampered with.") 
+      end
+      spawn { thread_file_chan.send(filelist[i]) }
+      name_index_hash["#{filelist[i]}"] = i
     end
+
+    thread_num.times do |t|
+      spawn do
+        begin
+          file = thread_file_chan.receive
+          puts "  extract ".colorize(:light_blue).mode(:bold).to_s + "#{outdir}#{File::SEPARATOR}#{file}" if verb
+          File.open("#{outdir}#{File::SEPARATOR}#{file}", "w"){ |f| f << get_file_contents_at_index(name_index_hash["#{file}"], star_contents) }
+        rescue e
+          puts "Error in thread #{self.name}"
+          puts e.message
+        end
+      end
+    end
+    Fiber.yield
     
     File.delete(infile) if opts.bool["gzip"] || opts.bool["delete"]
 
