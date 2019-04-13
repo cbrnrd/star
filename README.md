@@ -1,5 +1,10 @@
-# STAR
-A **ST**upid **AR**chive format.
+<p align="center"><a href="https://carterbrainerd.me/star" target="_blank"><img width="100" src="https://github.com/cbrnrd/star/raw/master/docs/img/logo.png"></a></p>
+<h1 align="center">Star</h1>
+<p align="center">The <b>St</b>upid <b>Ar</b>chive format</p>
+<p align="center">
+	<a href="https://travis-ci.org/cbrnrd/star"><img src="https://travis-ci.org/cbrnrd/star.svg?branch=master" alt="Build Status"></a>
+	<a href="https://github.com/cbrnrd/star/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a>
+</p>
 
 ## Installation
 
